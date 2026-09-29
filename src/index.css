@@ -1,0 +1,737 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+/* =========================================================
+   THEME  ·  MIDNIGHT IRIS
+   Dusk-indigo surfaces, one soft iris accent, and a dotted
+   drafting-desk canvas so the paper resume is the brightest
+   thing on screen.
+
+   One number re-themes the whole interface: --hue
+     285 iris (default)    350 pink      75 amber
+     162 emerald           260 blue      211 cyan (previous theme)
+========================================================= */
+
+:root {
+  --hue: 285;
+
+  /* Surfaces */
+  --bg: oklch(0.15 0.03 var(--hue));
+  --panel: oklch(0.195 0.032 var(--hue));
+  --field: oklch(0.155 0.03 var(--hue));
+  --field-focus: oklch(0.18 0.04 var(--hue));
+  --surface: oklch(1 0 0 / 0.04);
+  --surface-hover: oklch(1 0 0 / 0.08);
+
+  /* Lines */
+  --border: oklch(1 0 0 / 0.09);
+  --border-strong: oklch(1 0 0 / 0.18);
+
+  /* Text */
+  --text: oklch(0.965 0.008 var(--hue));
+  --muted: oklch(0.77 0.028 var(--hue));
+  --faint: oklch(0.6 0.035 var(--hue));
+
+  /* Accent */
+  --accent: oklch(0.79 0.125 var(--hue));
+  --accent-strong: oklch(0.875 0.09 var(--hue));
+  --accent-soft: oklch(0.79 0.125 var(--hue) / 0.12);
+  --accent-line: oklch(0.79 0.125 var(--hue) / 0.42);
+  --accent-ring: oklch(0.79 0.125 var(--hue) / 0.22);
+
+  /* Corners: each level of hierarchy gets its own radius */
+  --corner-field: 12px;
+  --corner-button: 10px;
+  --corner-tile: 16px;
+  --corner-card: 20px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --fast: 160ms;
+}
+
+/* Re-points Tailwind's cyan / blue accents at the theme hue, so classes such as
+   text-cyan-400, bg-cyan-500/10 or from-cyan-400 to-blue-500 in your JSX follow
+   --hue automatically. Lightness is kept identical to the Tailwind originals,
+   so any text-on-button contrast you already rely on stays the same. */
+@theme inline {
+  --color-cyan-200: oklch(0.917 0.08 var(--hue));
+  --color-cyan-300: oklch(0.865 0.105 var(--hue));
+  --color-cyan-400: oklch(0.79 0.125 var(--hue));
+  --color-cyan-500: oklch(0.715 0.14 var(--hue));
+  --color-blue-400: oklch(0.72 0.13 calc(var(--hue) + 18));
+  --color-blue-500: oklch(0.64 0.17 calc(var(--hue) + 18));
+}
+
+/* =========================================
+   BASE
+========================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  accent-color: var(--accent);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background-color: var(--bg);
+  background-image: radial-gradient(oklch(1 0 0 / 0.07) 1px, transparent 1.5px);
+  background-size: 28px 28px;
+  color: var(--text);
+  font-family: "Manrope", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Kept in the base layer so your Tailwind utilities can still override them */
+@layer base {
+  ::selection {
+    background: var(--accent-line);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Tailwind v4 buttons default to the arrow cursor */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* =========================================
+   INPUTS
+========================================= */
+
+.input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--corner-field);
+  background-color: var(--field);
+  color: var(--text);
+  padding: 12px 14px;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  outline: none;
+  transition:
+    border-color var(--fast) var(--ease),
+    background-color var(--fast) var(--ease),
+    box-shadow var(--fast) var(--ease);
+}
+
+.input::placeholder {
+  color: var(--faint);
+}
+
+.input:hover:not(:focus) {
+  border-color: var(--border-strong);
+}
+
+.input:focus {
+  border-color: var(--accent);
+  background-color: var(--field-focus);
+  box-shadow: 0 0 0 4px var(--accent-ring);
+}
+
+textarea.input {
+  min-height: 104px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+/* Keep browser autofill on-theme instead of pale yellow */
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text);
+  caret-color: var(--text);
+  box-shadow: 0 0 0 1000px var(--field) inset;
+}
+
+.input:-webkit-autofill:focus {
+  box-shadow:
+    0 0 0 1000px var(--field-focus) inset,
+    0 0 0 4px var(--accent-ring);
+}
+
+/* =========================================
+   BUILDER CARD
+========================================= */
+
+.builder-card {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--corner-card);
+  background: var(--panel);
+  padding: 26px;
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.05),
+    0 1px 2px oklch(0 0 0 / 0.4),
+    0 28px 48px -28px oklch(0 0 0 / 0.65);
+}
+
+/* =========================================
+   SECTION TITLE
+========================================= */
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--accent);
+}
+
+/* Icon sits in a tinted chip */
+.section-title svg {
+  flex-shrink: 0;
+  box-sizing: content-box;
+  width: 20px;
+  height: 20px;
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.section-title h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+/* =========================================
+   ADD BUTTON
+========================================= */
+
+.add-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--corner-button);
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.2;
+  transition:
+    background-color var(--fast) var(--ease),
+    border-color var(--fast) var(--ease),
+    color var(--fast) var(--ease),
+    transform var(--fast) var(--ease);
+}
+
+.add-button:hover {
+  background: oklch(0.79 0.125 var(--hue) / 0.2);
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+
+.add-button:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* =========================================
+   TEMPLATE BUTTON
+========================================= */
+
+.template-button {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  color: var(--muted);
+  background: var(--surface);
+  transition:
+    background-color var(--fast) var(--ease),
+    border-color var(--fast) var(--ease),
+    color var(--fast) var(--ease);
+}
+
+.template-button:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.template-active,
+.template-active:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* =========================================
+   TEMPLATE CARDS
+========================================= */
+
+.template-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--corner-tile);
+  background: var(--surface);
+  padding: 12px;
+  color: var(--muted);
+  transition:
+    border-color var(--fast) var(--ease),
+    background-color var(--fast) var(--ease),
+    box-shadow var(--fast) var(--ease),
+    transform var(--fast) var(--ease);
+}
+
+.template-card:hover {
+  border-color: var(--accent-line);
+  background: var(--surface-hover);
+  transform: translateY(-2px);
+}
+
+.template-card-active,
+.template-card-active:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  box-shadow:
+    0 0 0 3px var(--accent-ring),
+    0 18px 32px -18px oklch(0.79 0.125 var(--hue) / 0.55);
+}
+
+/* Check badge: the selected state is never colour-only */
+.template-card-active::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23120e1f' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E")
+      center / 12px no-repeat,
+    var(--accent);
+  box-shadow: 0 0 0 3px var(--panel);
+}
+
+.template-card span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* =========================================
+   MINI TEMPLATE PREVIEW
+========================================= */
+
+.template-mini {
+  width: 100%;
+  height: 130px;
+  border-radius: 6px;
+  background: #fff;
+  padding: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px -10px oklch(0 0 0 / 0.75);
+}
+
+.mini-title {
+  width: 60%;
+  height: 8px;
+  margin-bottom: 8px;
+  border-radius: 3px;
+  background: #111827;
+}
+
+.mini-line {
+  width: 90%;
+  height: 4px;
+  margin-top: 6px;
+  border-radius: 2px;
+  background: #d9dde3;
+}
+
+.mini-line.short {
+  width: 60%;
+}
+
+.mini-section {
+  width: 35%;
+  height: 6px;
+  margin-top: 14px;
+  border-radius: 2px;
+  background: #6b7280;
+}
+
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Modern */
+
+.modern-mini {
+  border-top: 5px solid #06b6d4;
+}
+
+.modern-mini .mini-title,
+.modern-mini .mini-section {
+  background: #0891b2;
+}
+
+/* Classic */
+
+.classic-mini {
+  border-top: 3px solid #111827;
+  font-family: Georgia, serif;
+}
+
+.classic-mini .mini-title {
+  width: 65%;
+  margin-left: auto;
+  margin-right: auto;
+  background: #111827;
+}
+
+/* Minimal */
+
+.minimal-mini {
+  padding-left: 18px;
+  padding-right: 18px;
+}
+
+.minimal-mini .mini-title {
+  width: 45%;
+  height: 6px;
+}
+
+.minimal-mini .mini-section {
+  width: 25%;
+  height: 4px;
+}
+
+/* Professional */
+
+.professional-mini {
+  border-left: 5px solid #374151;
+}
+
+.professional-mini .mini-title {
+  width: 55%;
+}
+
+/* =========================================
+   RESUME PREVIEW (the paper)
+   Resume colours stay fixed so the printed
+   PDF never changes with the app theme.
+========================================= */
+
+.resume-preview {
+  --paper-ink: #111827;
+  --paper-body: #374151;
+  --paper-muted: #6b7280;
+  --paper-accent: #111827;
+
+  width: 100%;
+  max-width: 850px;
+  min-height: 1100px;
+  margin: 0 auto;
+  background: #fff;
+  color: var(--paper-ink);
+  font-family: Arial, Helvetica, sans-serif;
+  border-radius: 3px;
+  box-shadow:
+    0 0 0 1px oklch(1 0 0 / 0.06),
+    0 40px 80px -24px oklch(0 0 0 / 0.75),
+    0 0 110px -30px oklch(0.79 0.125 var(--hue) / 0.22);
+  transition:
+    border-color 0.3s ease,
+    border-width 0.3s ease;
+}
+
+/* =========================================
+   MODERN RESUME
+========================================= */
+
+.resume-preview.modern {
+  --paper-accent: #0891b2;
+  font-family: Arial, Helvetica, sans-serif;
+  border-top: 8px solid #06b6d4;
+}
+
+.resume-preview.modern h1 {
+  letter-spacing: -0.02em;
+}
+
+.resume-preview.modern .resume-heading {
+  color: var(--paper-accent);
+  border-bottom: 2px solid var(--paper-accent);
+}
+
+/* =========================================
+   CLASSIC RESUME
+========================================= */
+
+.resume-preview.classic {
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.resume-preview.classic h1 {
+  text-align: center;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.resume-preview.classic > p {
+  text-align: center;
+}
+
+.resume-preview.classic .resume-heading {
+  font-family: Georgia, "Times New Roman", serif;
+  text-align: center;
+  border-bottom: 1px solid #222;
+  padding-bottom: 5px;
+}
+
+/* =========================================
+   MINIMAL RESUME
+========================================= */
+
+.resume-preview.minimal {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.resume-preview.minimal h1 {
+  font-size: 2.2rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.resume-preview.minimal .resume-heading {
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+  color: var(--paper-muted);
+}
+
+/* =========================================
+   PROFESSIONAL RESUME
+========================================= */
+
+.resume-preview.professional {
+  font-family: "Trebuchet MS", Arial, sans-serif;
+  border-left: 8px solid #374151;
+}
+
+.resume-preview.professional h1 {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.resume-preview.professional .resume-heading {
+  background: #f3f4f6;
+  padding: 5px 8px;
+  border: none;
+  border-left: 3px solid #374151;
+  letter-spacing: 0.08em;
+  font-family: "Trebuchet MS", Arial, sans-serif;
+}
+
+/* =========================================
+   RESUME HEADINGS
+========================================= */
+
+.resume-heading {
+  margin-bottom: 10px;
+  border-bottom: 2px solid var(--paper-ink);
+  padding-bottom: 5px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--paper-ink);
+}
+
+/* =========================================
+   RESUME TEXT
+========================================= */
+
+.resume-text {
+  margin-top: 8px;
+  color: var(--paper-body);
+  font-size: 13px;
+  line-height: 1.65;
+  overflow-wrap: break-word;
+}
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.36 0.04 var(--hue)) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid var(--bg);
+  border-radius: 10px;
+  background: oklch(0.36 0.04 var(--hue));
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.46 0.06 var(--hue));
+}
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+
+  .template-card:hover {
+    transform: none;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 640px) {
+  .builder-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .section-title {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+
+  .resume-preview {
+    padding: 24px !important;
+    min-height: auto;
+  }
+
+  .resume-preview h1 {
+    font-size: 25px;
+  }
+
+  .resume-preview p {
+    font-size: 12px;
+  }
+
+  .template-mini {
+    height: 110px;
+  }
+}
+
+/* =========================================
+   PRINT / PDF
+========================================= */
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
+  body {
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    overflow: hidden !important;
+  }
+
+  body > * {
+    display: none !important;
+  }
+
+  body {
+    display: block !important;
+  }
+
+  #root {
+    display: block !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  #root * {
+    visibility: hidden !important;
+  }
+
+  #resume-print,
+  #resume-print * {
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #resume-print {
+    display: block !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 15mm !important;
+    box-sizing: border-box !important;
+    background: white !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+  }
+
+  #resume-print .resume-preview {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background: white !important;
+  }
+}
