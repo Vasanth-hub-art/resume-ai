@@ -33,14 +33,20 @@ function Hero() {
 
             {/* CREATE RESUME */}
             <button
-              onClick={() => {
-                window.location.href = "/resume-builder";
-              }}
-              className="flex items-center justify-center gap-2 rounded-xl bg-cyan-400 px-7 py-4 font-semibold text-black transition hover:bg-cyan-300"
-            >
-              Create My Resume
-              <ArrowRight size={18} />
-            </button>
+  onClick={() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      window.location.href = "/resume-builder";
+    } else {
+      window.location.href = "/login";
+    }
+  }}
+  className="flex items-center justify-center gap-2 rounded-xl bg-cyan-400 px-7 py-4 font-semibold text-black transition hover:bg-cyan-300"
+>
+  Create My Resume
+  <ArrowRight size={18} />
+</button>
 
             {/* EXPLORE TEMPLATES */}
             <button
