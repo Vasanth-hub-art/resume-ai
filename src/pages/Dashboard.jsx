@@ -174,7 +174,7 @@ setResumes((current) =>
   )
 );
 
-const publicUrl = `${window.location.origin}/resume/${data.publicId}`;
+
 
       const publicUrl = `${window.location.origin}/resume/${data.publicId}`;
 
