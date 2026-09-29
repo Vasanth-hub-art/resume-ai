@@ -158,9 +158,23 @@ function Dashboard() {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to share resume");
-      }
+     if (!response.ok) {
+  throw new Error(data.message || "Failed to share resume");
+}
+
+setResumes((current) =>
+  current.map((resume) =>
+    resume._id === resumeId
+      ? {
+          ...resume,
+          isPublic: true,
+          publicId: data.publicId,
+        }
+      : resume
+  )
+);
+
+const publicUrl = `${window.location.origin}/resume/${data.publicId}`;
 
       const publicUrl = `${window.location.origin}/resume/${data.publicId}`;
 
