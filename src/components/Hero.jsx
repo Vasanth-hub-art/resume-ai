@@ -87,7 +87,7 @@ function Hero() {
 
               <div className="border-b border-gray-200 pb-4">
                 <h2 className="text-2xl font-bold">
-                  Alex Johnson
+                  Vasanth Periyasamy
                 </h2>
 
                 <p className="mt-1 text-sm text-gray-500">
@@ -95,7 +95,7 @@ function Hero() {
                 </p>
 
                 <p className="mt-2 text-xs text-gray-400">
-                  Chennai, India · alex@email.com
+                  Trichy, India · Vasa@email.com
                 </p>
               </div>
 
