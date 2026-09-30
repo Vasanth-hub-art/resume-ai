@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -32,24 +32,66 @@ function Home() {
   );
 }
 
+function ProtectedRoute() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Outlet />;
+}
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        <Route path="/" element={<Home />} />
+        {/* PUBLIC ROUTES */}
 
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={<Home />}
+        />
 
-        <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/signup"
+          element={<Signup />}
+        />
 
-        <Route path="/resume-builder" element={<ResumeBuilder />} />
+        {/* PUBLIC SHARED RESUME */}
 
         <Route
           path="/resume/:publicId"
           element={<PublicResume />}
+        />
+
+        {/* PROTECTED ROUTES */}
+
+        <Route element={<ProtectedRoute />}>
+
+          <Route
+            path="/dashboard"
+            element={<Dashboard />}
+          />
+
+          <Route
+            path="/resume-builder"
+            element={<ResumeBuilder />}
+          />
+
+        </Route>
+
+        {/* UNKNOWN ROUTES */}
+
+        <Route
+          path="*"
+          element={<Navigate to="/" replace />}
         />
 
       </Routes>

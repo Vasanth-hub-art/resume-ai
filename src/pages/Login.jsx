@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, FileText } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  FileText,
+  ArrowRight,
+  Sparkles,
+  ShieldCheck,
+} from "lucide-react";
 import API_URL from "../config/api";
-
 
 function Login() {
   const navigate = useNavigate();
@@ -60,136 +66,230 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080b12] px-6 py-12 text-white flex items-center justify-center">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#050711] px-4 py-12 text-white sm:px-6">
 
-      <div className="w-full max-w-md">
+      {/* Background Glow */}
+      <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-indigo-500/10 blur-[140px]" />
 
+      <div className="pointer-events-none absolute -left-40 bottom-0 -z-10 h-80 w-80 rounded-full bg-cyan-400/5 blur-[120px]" />
+
+      <div className="pointer-events-none absolute -right-40 top-1/3 -z-10 h-80 w-80 rounded-full bg-indigo-500/5 blur-[120px]" />
+
+      {/* Background Grid */}
+      <div className="pointer-events-none absolute inset-0 -z-20 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] [background-size:42px_42px]" />
+
+      <div className="relative w-full max-w-md">
+
+        {/* Logo */}
         <Link
           to="/"
-          className="mb-8 flex items-center justify-center gap-2"
+          className="group mb-8 flex items-center justify-center gap-3"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-400 text-black">
-            <FileText size={20} />
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-indigo-400/20 bg-gradient-to-br from-indigo-500 to-cyan-400 text-black shadow-[0_0_28px_rgba(124,92,255,0.18)] transition duration-300 group-hover:shadow-[0_0_35px_rgba(124,92,255,0.3)]">
+            <FileText size={21} />
           </div>
 
-          <span className="text-xl font-bold">
-            Resu<span className="text-cyan-400">Me</span> AI
+          <span className="text-xl font-extrabold tracking-tight">
+            Resu
+            <span className="bg-gradient-to-r from-indigo-300 to-cyan-300 bg-clip-text text-transparent">
+              Me
+            </span>{" "}
+            AI
           </span>
         </Link>
 
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 shadow-2xl">
+        {/* Card */}
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.035] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.4)] backdrop-blur-2xl sm:p-8">
 
-          <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold">
-              Welcome back
-            </h1>
+          {/* Card Glow */}
+          <div className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-indigo-500/10 blur-[70px]" />
 
-            <p className="mt-2 text-gray-400">
-              Sign in to continue building your resume
-            </p>
-          </div>
+          <div className="relative">
 
-          {error && (
-            <div className="mb-5 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
-              {error}
-            </div>
-          )}
+            {/* Heading */}
+            <div className="mb-8 text-center">
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-400/20 bg-indigo-500/10 text-cyan-300">
+                <Sparkles size={20} />
+              </div>
 
-            <div>
-              <label className="mb-2 block text-sm text-gray-300">
-                Email
-              </label>
+              <h1 className="text-3xl font-extrabold tracking-tight">
+                Welcome back
+              </h1>
 
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="you@example.com"
-                required
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-400"
-              />
+              <p className="mt-2 text-sm leading-6 text-gray-500">
+                Sign in to continue building your professional resume.
+              </p>
+
             </div>
 
-            <div>
-              <div className="mb-2 flex items-center justify-between">
-                <label className="text-sm text-gray-300">
-                  Password
+            {/* Error */}
+            {error && (
+              <div className="mb-5 rounded-xl border border-red-400/20 bg-red-400/[0.06] px-4 py-3 text-sm leading-6 text-red-400">
+                {error}
+              </div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-5">
+
+              {/* Email */}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="mb-2 block text-sm font-semibold text-gray-300"
+                >
+                  Email
                 </label>
 
-                <button
-                  type="button"
-                  className="text-sm text-cyan-400 hover:text-cyan-300"
-                >
-                  Forgot password?
-                </button>
-              </div>
-
-              <div className="relative">
-
                 <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
+                  id="email"
+                  type="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
-                  placeholder="Enter your password"
+                  placeholder="you@example.com"
+                  autoComplete="email"
                   required
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-white outline-none transition focus:border-cyan-400"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.025] px-4 py-3.5 text-sm text-white outline-none transition duration-200 placeholder:text-gray-600 hover:border-white/15 focus:border-indigo-400/40 focus:bg-white/[0.045] focus:shadow-[0_0_0_3px_rgba(124,92,255,0.08)]"
                 />
-
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
-                >
-                  {showPassword ? (
-                    <EyeOff size={19} />
-                  ) : (
-                    <Eye size={19} />
-                  )}
-                </button>
-
               </div>
+
+              {/* Password */}
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <label
+                    htmlFor="password"
+                    className="text-sm font-semibold text-gray-300"
+                  >
+                    Password
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setError("Password recovery is not available yet.")
+                    }
+                    className="text-xs font-semibold text-cyan-400 transition hover:text-cyan-300"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+
+                <div className="relative">
+
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Enter your password"
+                    autoComplete="current-password"
+                    required
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.025] px-4 py-3.5 pr-12 text-sm text-white outline-none transition duration-200 placeholder:text-gray-600 hover:border-white/15 focus:border-indigo-400/40 focus:bg-white/[0.045] focus:shadow-[0_0_0_3px_rgba(124,92,255,0.08)]"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowPassword((current) => !current)
+                    }
+                    aria-label={
+                      showPassword
+                        ? "Hide password"
+                        : "Show password"
+                    }
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 transition hover:text-white"
+                  >
+                    {showPassword ? (
+                      <EyeOff size={19} />
+                    ) : (
+                      <Eye size={19} />
+                    )}
+                  </button>
+
+                </div>
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-400 py-3.5 text-sm font-bold text-black shadow-[0_10px_30px_rgba(124,92,255,0.22)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_36px_rgba(124,92,255,0.34)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+              >
+                <span className="absolute inset-0 -translate-x-full bg-white/20 transition-transform duration-500 group-hover:translate-x-full" />
+
+                <span className="relative">
+                  {loading ? "Signing in..." : "Sign In"}
+                </span>
+
+                {!loading && (
+                  <ArrowRight
+                    size={17}
+                    className="relative transition-transform duration-300 group-hover:translate-x-1"
+                  />
+                )}
+
+              </button>
+
+            </form>
+
+            {/* Divider */}
+            <div className="my-6 flex items-center gap-4">
+              <div className="h-px flex-1 bg-white/10" />
+
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-600">
+                Or
+              </span>
+
+              <div className="h-px flex-1 bg-white/10" />
             </div>
 
+            {/* Google */}
             <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-cyan-400 py-3 font-semibold text-black transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-50"
+              type="button"
+              onClick={() =>
+                setError("Google sign-in is not available yet.")
+              }
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.025] py-3.5 text-sm font-semibold text-gray-300 transition duration-300 hover:border-white/20 hover:bg-white/[0.05] hover:text-white"
             >
-              {loading ? "Signing in..." : "Sign In"}
+              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-white text-xs font-extrabold text-gray-800">
+                G
+              </span>
+
+              Continue with Google
             </button>
 
-          </form>
+            {/* Security Note */}
+            <div className="mt-6 flex items-center justify-center gap-2 text-[10px] text-gray-600">
+              <ShieldCheck size={13} className="text-cyan-400/70" />
+              Secure account authentication
+            </div>
 
-          <div className="my-6 flex items-center gap-4">
-            <div className="h-px flex-1 bg-white/10" />
-            <span className="text-xs text-gray-500">
-              OR
-            </span>
-            <div className="h-px flex-1 bg-white/10" />
+            {/* Signup */}
+            <p className="mt-6 text-center text-sm text-gray-500">
+              Don't have an account?{" "}
+              <Link
+                to="/signup"
+                className="font-semibold text-cyan-400 transition hover:text-cyan-300"
+              >
+                Create account
+              </Link>
+            </p>
+
           </div>
 
-          <button
-            type="button"
-            className="w-full rounded-xl border border-white/10 bg-white/5 py-3 font-medium transition hover:bg-white/10"
+        </div>
+
+        {/* Back Home */}
+        <div className="mt-6 text-center">
+          <Link
+            to="/"
+            className="text-xs font-medium text-gray-600 transition hover:text-gray-400"
           >
-            Continue with Google
-          </button>
-
-          <p className="mt-6 text-center text-sm text-gray-400">
-            Don't have an account?{" "}
-
-            <Link
-              to="/signup"
-              className="font-medium text-cyan-400 hover:text-cyan-300"
-            >
-              Create account
-            </Link>
-          </p>
-
+            ← Back to home
+          </Link>
         </div>
 
       </div>

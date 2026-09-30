@@ -1,71 +1,180 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&display=swap");
 @import "tailwindcss";
 
 /* =========================================================
-   THEME  ·  MIDNIGHT IRIS
-   Dusk-indigo surfaces, one soft iris accent, and a dotted
-   drafting-desk canvas so the paper resume is the brightest
-   thing on screen.
+   RESUME AI · AURORA GLASS
 
-   One number re-themes the whole interface: --hue
-     285 iris (default)    350 pink      75 amber
-     162 emerald           260 blue      211 cyan (previous theme)
+   Frosted-glass panels floating over a soft iris + aqua
+   aurora, on a dotted drafting canvas. Glow is reserved for
+   things you touch (focus, hover, the selected template,
+   primary actions) so the lit paper stays the hero.
+
+   RE-THEME (either works)
+     --hue      primary colour    286 = iris  (≈ #7c5cff)
+     --hue-2    secondary colour  211 = aqua  (≈ #55e6ff)
+     <html data-theme="ocean | emerald | rose | amber">
+
+   PAPER ACCENT (optional)
+     --resume-accent: <any colour>   on .resume-preview or a parent
+========================================================= */
+
+/* =========================================================
+   TOKENS
 ========================================================= */
 
 :root {
-  --hue: 285;
+  --hue: 286;
+  --hue-2: 211;
+  --hue-mid: calc((var(--hue) + var(--hue-2)) / 2);
+  --hue-bg: calc(var(--hue) - 14); /* surfaces lean a touch cooler than the accent */
 
-  /* Surfaces */
-  --bg: oklch(0.15 0.03 var(--hue));
-  --panel: oklch(0.195 0.032 var(--hue));
-  --field: oklch(0.155 0.03 var(--hue));
-  --field-focus: oklch(0.18 0.04 var(--hue));
-  --surface: oklch(1 0 0 / 0.04);
-  --surface-hover: oklch(1 0 0 / 0.08);
+  /* Canvas */
+  --bg: oklch(0.135 0.03 var(--hue-bg));
+  --bg-2: oklch(0.17 0.036 var(--hue-bg));
+  --bg-3: oklch(0.205 0.04 var(--hue-bg));
 
-  /* Lines */
-  --border: oklch(1 0 0 / 0.09);
-  --border-strong: oklch(1 0 0 / 0.18);
+  /* Glass (translucent on purpose: the blur does the work) */
+  --panel: oklch(0.21 0.04 var(--hue-bg) / 0.58);
+  --panel-solid: oklch(0.205 0.04 var(--hue-bg));
+  --panel-hover: oklch(0.24 0.045 var(--hue-bg) / 0.68);
+  --glass: oklch(1 0 0 / 0.04);
+  --glass-hover: oklch(1 0 0 / 0.07);
+  --glass-strong: oklch(1 0 0 / 0.1);
+  --glass-filter: blur(22px) saturate(1.6);
+
+  /* Fields: recessed wells sunk into the glass */
+  --field: oklch(0.12 0.03 var(--hue-bg) / 0.62);
+  --field-hover: oklch(0.14 0.034 var(--hue-bg) / 0.74);
+  --field-focus: oklch(0.16 0.04 var(--hue-bg) / 0.9);
 
   /* Text */
-  --text: oklch(0.965 0.008 var(--hue));
-  --muted: oklch(0.77 0.028 var(--hue));
-  --faint: oklch(0.6 0.035 var(--hue));
+  --text: oklch(0.975 0.01 var(--hue-bg));
+  --text-soft: oklch(0.9 0.016 var(--hue-bg));
+  --muted: oklch(0.74 0.03 var(--hue-bg));
+  --faint: oklch(0.63 0.035 var(--hue-bg));
+  --on-accent: oklch(0.16 0.04 var(--hue-bg)); /* text on the bright gradient */
 
-  /* Accent */
-  --accent: oklch(0.79 0.125 var(--hue));
-  --accent-strong: oklch(0.875 0.09 var(--hue));
-  --accent-soft: oklch(0.79 0.125 var(--hue) / 0.12);
-  --accent-line: oklch(0.79 0.125 var(--hue) / 0.42);
-  --accent-ring: oklch(0.79 0.125 var(--hue) / 0.22);
+  /* Brand */
+  --accent: oklch(0.6 0.225 var(--hue));
+  --accent-light: oklch(0.72 0.16 var(--hue));
+  --accent-bright: oklch(0.83 0.1 var(--hue));
+  --cyan: oklch(0.858 0.126 var(--hue-2)); /* secondary accent */
+  --cyan-light: oklch(0.92 0.085 var(--hue-2));
+  --blue: oklch(0.68 0.17 var(--hue-mid));
+
+  /* Brand at fixed opacities */
+  --accent-a10: color-mix(in oklab, var(--accent) 10%, transparent);
+  --accent-a16: color-mix(in oklab, var(--accent) 16%, transparent);
+  --accent-a24: color-mix(in oklab, var(--accent) 24%, transparent);
+  --accent-a40: color-mix(in oklab, var(--accent) 40%, transparent);
+  --accent-a60: color-mix(in oklab, var(--accent) 60%, transparent);
+  --cyan-a10: color-mix(in oklab, var(--cyan) 10%, transparent);
+  --cyan-a20: color-mix(in oklab, var(--cyan) 20%, transparent);
+  --cyan-a36: color-mix(in oklab, var(--cyan) 36%, transparent);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(
+    135deg,
+    oklch(0.66 0.2 var(--hue)) 0%,
+    var(--blue) 52%,
+    var(--cyan) 100%
+  );
+  --gradient-primary-hover: linear-gradient(
+    135deg,
+    oklch(0.72 0.19 var(--hue)) 0%,
+    oklch(0.74 0.16 var(--hue-mid)) 52%,
+    oklch(0.91 0.11 var(--hue-2)) 100%
+  );
+  --gradient-aurora: linear-gradient(135deg, var(--accent-light), var(--blue) 50%, var(--cyan));
+  --gradient-subtle: linear-gradient(145deg, oklch(1 0 0 / 0.07), oklch(1 0 0 / 0.02));
+  --gradient-text: linear-gradient(90deg, #fff 0%, var(--accent-bright) 48%, var(--cyan-light) 100%);
+
+  /* Borders */
+  --border: oklch(1 0 0 / 0.08);
+  --border-light: oklch(1 0 0 / 0.13);
+  --border-strong: oklch(1 0 0 / 0.2);
+  --border-accent: color-mix(in oklab, var(--accent) 48%, transparent);
+  --border-cyan: var(--cyan-a36);
+
+  /* Depth + glow */
+  --shadow-glass:
+    inset 0 1px 0 oklch(1 0 0 / 0.1), 0 1px 2px oklch(0 0 0 / 0.35),
+    0 26px 64px -30px oklch(0 0 0 / 0.8), 0 36px 90px -52px var(--accent-a40);
+  --shadow-glass-active:
+    inset 0 1px 0 oklch(1 0 0 / 0.12), 0 1px 2px oklch(0 0 0 / 0.35),
+    0 26px 64px -30px oklch(0 0 0 / 0.8), 0 40px 100px -40px var(--accent-a60);
+  --glow-accent: 0 0 24px var(--accent-a24);
+  --glow-accent-strong: 0 0 40px var(--accent-a40);
+  --glow-cyan: 0 0 24px var(--cyan-a20);
+  --glow-button: 0 12px 30px -8px var(--accent-a60), 0 0 30px var(--cyan-a20);
+
+  /* Status */
+  --success: oklch(0.83 0.17 160);
+  --danger: oklch(0.71 0.19 17);
+  --warning: oklch(0.86 0.15 85);
+  --danger-a25: color-mix(in oklab, var(--danger) 25%, transparent);
 
   /* Corners: each level of hierarchy gets its own radius */
-  --corner-field: 12px;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-2xl: 28px;
+  --corner-field: var(--radius-md);
   --corner-button: 10px;
-  --corner-tile: 16px;
-  --corner-card: 20px;
+  --corner-tile: var(--radius-lg);
+  --corner-card: var(--radius-xl);
 
   /* Motion */
-  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --fast: 160ms;
+  --ease: cubic-bezier(0.2, 0.75, 0.2, 1);
+  --fast: 150ms;
+  --normal: 240ms;
+  --slow: 420ms;
+
+  --font-ui: "Manrope", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Aliases kept for older markup */
+  --surface: var(--glass);
+  --surface-hover: var(--glass-hover);
+  --accent-strong: var(--accent-bright);
+  --accent-soft: var(--accent-a16);
+  --accent-line: var(--accent-a40);
+  --accent-ring: var(--accent-a24);
 }
 
-/* Re-points Tailwind's cyan / blue accents at the theme hue, so classes such as
-   text-cyan-400, bg-cyan-500/10 or from-cyan-400 to-blue-500 in your JSX follow
-   --hue automatically. Lightness is kept identical to the Tailwind originals,
-   so any text-on-button contrast you already rely on stays the same. */
+/* Theme presets: <html data-theme="ocean"> */
+:root[data-theme="ocean"] { --hue: 252; --hue-2: 192; }
+:root[data-theme="emerald"] { --hue: 162; --hue-2: 208; }
+:root[data-theme="rose"] { --hue: 352; --hue-2: 32; }
+:root[data-theme="amber"] { --hue: 75; --hue-2: 28; }
+
+/* Tailwind colour mapping: text-cyan-400, bg-indigo-500/10, from-cyan-400 to-blue-500 … follow the theme */
 @theme inline {
-  --color-cyan-200: oklch(0.917 0.08 var(--hue));
-  --color-cyan-300: oklch(0.865 0.105 var(--hue));
-  --color-cyan-400: oklch(0.79 0.125 var(--hue));
-  --color-cyan-500: oklch(0.715 0.14 var(--hue));
-  --color-blue-400: oklch(0.72 0.13 calc(var(--hue) + 18));
-  --color-blue-500: oklch(0.64 0.17 calc(var(--hue) + 18));
+  --font-sans: "Manrope", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-cyan-100: oklch(0.96 0.035 var(--hue-2));
+  --color-cyan-200: oklch(0.93 0.065 var(--hue-2));
+  --color-cyan-300: oklch(0.89 0.1 var(--hue-2));
+  --color-cyan-400: oklch(0.858 0.126 var(--hue-2));
+  --color-cyan-500: oklch(0.79 0.13 var(--hue-2));
+  --color-cyan-600: oklch(0.67 0.115 var(--hue-2));
+
+  --color-blue-300: oklch(0.8 0.11 var(--hue-mid));
+  --color-blue-400: oklch(0.73 0.15 var(--hue-mid));
+  --color-blue-500: oklch(0.65 0.19 var(--hue-mid));
+  --color-blue-600: oklch(0.57 0.2 var(--hue-mid));
+
+  --color-indigo-200: oklch(0.89 0.05 var(--hue));
+  --color-indigo-300: oklch(0.81 0.1 var(--hue));
+  --color-indigo-400: oklch(0.71 0.17 var(--hue));
+  --color-indigo-500: oklch(0.6 0.225 var(--hue));
+  --color-indigo-600: oklch(0.52 0.23 var(--hue));
 }
 
-/* =========================================
+/* =========================================================
    BASE
-========================================= */
+========================================================= */
 
 * {
   box-sizing: border-box;
@@ -76,56 +185,136 @@ html {
   accent-color: var(--accent);
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
   min-width: 320px;
+  min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--bg);
-  background-image: radial-gradient(oklch(1 0 0 / 0.07) 1px, transparent 1.5px);
+  background-image: radial-gradient(oklch(1 0 0 / 0.06) 1px, transparent 1.5px);
   background-size: 28px 28px;
   color: var(--text);
-  font-family: "Manrope", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--font-ui);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
+/* Aurora + vignette: one fixed layer, so it never repaints on scroll */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(46rem 30rem at 6% -8%, var(--accent-a40), transparent 68%),
+    radial-gradient(42rem 28rem at 88% -8%, var(--cyan-a20), transparent 68%),
+    radial-gradient(64rem 30rem at 52% 120%, var(--accent-a24), transparent 70%),
+    radial-gradient(120% 90% at 50% 35%, transparent 58%, oklch(0 0 0 / 0.38) 100%);
+}
+
+/* Fine grain: dithers the dark gradients so they never band */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
 /* Kept in the base layer so your Tailwind utilities can still override them */
 @layer base {
   ::selection {
-    background: var(--accent-line);
+    background: var(--accent-a40);
     color: #fff;
   }
 
   :focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
   }
 
-  /* Tailwind v4 buttons default to the arrow cursor */
   button:not(:disabled),
-  [role="button"]:not(:disabled) {
+  [role="button"]:not(:disabled),
+  summary,
+  select:not(:disabled) {
     cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 }
 
-/* =========================================
+/* Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(1 0 0 / 0.18) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-color: oklch(1 0 0 / 0.16);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(1 0 0 / 0.3);
+}
+
+/* =========================================================
+   GLASS SURFACE (use on any panel, header or toolbar)
+========================================================= */
+
+.glass {
+  border: 1px solid var(--border);
+  background:
+    linear-gradient(160deg, oklch(1 0 0 / 0.065), oklch(1 0 0 / 0.012) 42%),
+    var(--panel);
+  -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
+  box-shadow: var(--shadow-glass);
+}
+
+/* =========================================================
    INPUTS
-========================================= */
+========================================================= */
 
 .input {
   width: 100%;
+  padding: 12px 14px;
   border: 1px solid var(--border);
   border-radius: var(--corner-field);
   background-color: var(--field);
+  background-image: linear-gradient(180deg, oklch(0 0 0 / 0.24), oklch(0 0 0 / 0.04) 60%);
   color: var(--text);
-  padding: 12px 14px;
+  caret-color: var(--cyan);
   font: inherit;
   font-size: 14px;
-  line-height: 1.4;
-  outline: none;
+  line-height: 1.5;
+  outline: 2px solid transparent; /* stays visible in forced-colors mode */
+  outline-offset: 2px;
+  box-shadow:
+    inset 0 1px 2px oklch(0 0 0 / 0.4),
+    0 1px 0 oklch(1 0 0 / 0.045);
   transition:
     border-color var(--fast) var(--ease),
     background-color var(--fast) var(--ease),
@@ -136,56 +325,161 @@ body {
   color: var(--faint);
 }
 
-.input:hover:not(:focus) {
-  border-color: var(--border-strong);
+.input:where(:hover:not(:focus):not(:disabled)) {
+  border-color: var(--border-light);
+  background-color: var(--field-hover);
 }
 
 .input:focus {
-  border-color: var(--accent);
+  border-color: var(--accent-light);
   background-color: var(--field-focus);
-  box-shadow: 0 0 0 4px var(--accent-ring);
+  box-shadow:
+    inset 0 1px 2px oklch(0 0 0 / 0.3),
+    0 0 0 3px var(--accent-a24),
+    0 12px 34px -10px var(--accent-a60);
+}
+
+.input:is(:user-invalid, [aria-invalid="true"]) {
+  border-color: var(--danger);
+}
+
+.input:is(:user-invalid, [aria-invalid="true"]):focus {
+  box-shadow:
+    inset 0 1px 2px oklch(0 0 0 / 0.3),
+    0 0 0 3px var(--danger-a25);
+}
+
+.input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 textarea.input {
-  min-height: 104px;
+  min-height: 120px;
+  max-height: 28rem;
   resize: vertical;
-  line-height: 1.6;
+  line-height: 1.65;
+  field-sizing: content; /* grows with the text where supported */
 }
 
-/* Keep browser autofill on-theme instead of pale yellow */
+select.input {
+  appearance: none;
+  padding-right: 40px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%),
+    linear-gradient(180deg, oklch(0 0 0 / 0.24), oklch(0 0 0 / 0.04) 60%);
+  background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%, 0 0;
+  background-size: 6px 6px, 6px 6px, auto;
+  background-repeat: no-repeat;
+}
+
+select.input option {
+  background: var(--panel-solid);
+  color: var(--text);
+}
+
+.input[type="file"] {
+  padding: 8px 10px;
+  color: var(--muted);
+}
+
+.input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 7px 12px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--glass-strong);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--fast) var(--ease);
+}
+
+.input[type="file"]::file-selector-button:hover {
+  background: oklch(1 0 0 / 0.16);
+}
+
+/* Keep browser autofill on-theme */
 .input:-webkit-autofill,
 .input:-webkit-autofill:hover,
 .input:-webkit-autofill:focus {
   -webkit-text-fill-color: var(--text);
   caret-color: var(--text);
-  box-shadow: 0 0 0 1000px var(--field) inset;
+  box-shadow: 0 0 0 1000px var(--panel-solid) inset;
 }
 
 .input:-webkit-autofill:focus {
   box-shadow:
-    0 0 0 1000px var(--field-focus) inset,
-    0 0 0 4px var(--accent-ring);
+    0 0 0 1000px var(--panel-solid) inset,
+    0 0 0 3px var(--accent-a24);
 }
 
-/* =========================================
-   BUILDER CARD
-========================================= */
+/* =========================================================
+   BUILDER CARD · frosted glass
+   A 1px light-catching rim sits on top; the section you are
+   editing lights its rim in the aurora gradient.
+========================================================= */
 
 .builder-card {
   position: relative;
+  isolation: isolate;
+  padding: 28px;
   border: 1px solid var(--border);
   border-radius: var(--corner-card);
-  background: var(--panel);
-  padding: 26px;
-  box-shadow:
-    inset 0 1px 0 oklch(1 0 0 / 0.05),
-    0 1px 2px oklch(0 0 0 / 0.4),
-    0 28px 48px -28px oklch(0 0 0 / 0.65);
+  background:
+    radial-gradient(30rem 15rem at 100% 0%, var(--accent-a10), transparent 70%),
+    radial-gradient(24rem 12rem at 0% 100%, var(--cyan-a10), transparent 70%),
+    linear-gradient(160deg, oklch(1 0 0 / 0.065), oklch(1 0 0 / 0.012) 42%),
+    var(--panel);
+  -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
+  box-shadow: var(--shadow-glass);
+  transition: box-shadow var(--normal) var(--ease);
 }
 
-/* =========================================
+.builder-card::before,
+.builder-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.builder-card::before {
+  background: linear-gradient(
+    155deg,
+    oklch(1 0 0 / 0.28),
+    oklch(1 0 0 / 0.06) 26%,
+    oklch(1 0 0 / 0.02) 62%,
+    var(--accent-a40)
+  );
+}
+
+.builder-card::after {
+  background: var(--gradient-aurora);
+  opacity: 0;
+  transition: opacity var(--normal) var(--ease);
+}
+
+.builder-card:focus-within {
+  box-shadow: var(--shadow-glass-active);
+}
+
+.builder-card:focus-within::after {
+  opacity: 0.6;
+}
+
+/* =========================================================
    SECTION TITLE
-========================================= */
+========================================================= */
 
 .section-title {
   display: flex;
@@ -193,131 +487,251 @@ textarea.input {
   gap: 12px;
   margin-bottom: 22px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-  color: var(--accent);
+  background: linear-gradient(90deg, var(--border-strong), var(--border) 45%, transparent) bottom left / 100% 1px no-repeat;
 }
 
-/* Icon sits in a tinted chip */
 .section-title svg {
   flex-shrink: 0;
   box-sizing: content-box;
   width: 20px;
   height: 20px;
   padding: 8px;
+  border: 1px solid var(--accent-a24);
   border-radius: 12px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: linear-gradient(140deg, var(--accent-a24), var(--cyan-a10));
+  color: var(--cyan);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.16),
+    0 0 24px -4px var(--accent-a40);
 }
 
 .section-title h2 {
   margin: 0;
   color: var(--text);
   font-size: 17px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.2;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
 }
 
-/* =========================================
-   ADD BUTTON
-========================================= */
+/* =========================================================
+   PRIMARY BUTTON  (.add-button · .btn-primary)
+   Bright gradient, so the label is deep navy: readable
+   across the whole fill, unlike white on aqua.
+========================================================= */
 
-.add-button {
+.add-button,
+.btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  border: 1px solid var(--accent-line);
+  justify-content: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 10px 18px;
+  border: 1px solid oklch(1 0 0 / 0.3);
   border-radius: var(--corner-button);
-  background: var(--accent-soft);
-  color: var(--accent);
-  padding: 8px 14px;
+  background-color: var(--accent);
+  background-image:
+    linear-gradient(180deg, oklch(1 0 0 / 0.26), oklch(1 0 0 / 0) 52%),
+    var(--gradient-primary);
+  color: var(--on-accent);
   font-size: 13px;
-  font-weight: 650;
-  line-height: 1.2;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  touch-action: manipulation;
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.5),
+    var(--glow-button);
   transition:
-    background-color var(--fast) var(--ease),
+    transform var(--fast) var(--ease),
+    box-shadow var(--fast) var(--ease),
+    filter var(--fast) var(--ease);
+}
+
+.add-button:hover,
+.btn-primary:hover {
+  filter: brightness(1.08) saturate(1.1);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.55),
+    0 16px 38px -8px var(--accent-a60),
+    0 0 46px var(--cyan-a20);
+}
+
+@media (hover: hover) {
+  .add-button:hover,
+  .btn-primary:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.add-button:active,
+.btn-primary:active {
+  transform: translateY(0) scale(0.985);
+  filter: none;
+}
+
+.add-button:disabled,
+.btn-primary:disabled {
+  filter: saturate(0.5);
+  box-shadow: none;
+}
+
+/* =========================================================
+   SECONDARY GLOW BUTTON
+========================================================= */
+
+.btn-glow {
+  border: 1px solid var(--border-accent);
+  border-radius: var(--corner-button);
+  background: linear-gradient(135deg, var(--accent-a16), var(--cyan-a10));
+  color: var(--accent-bright);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.08),
+    0 0 26px -6px var(--accent-a40);
+  transition:
+    background var(--fast) var(--ease),
     border-color var(--fast) var(--ease),
+    box-shadow var(--fast) var(--ease),
     color var(--fast) var(--ease),
     transform var(--fast) var(--ease);
 }
 
-.add-button:hover {
-  background: oklch(0.79 0.125 var(--hue) / 0.2);
-  border-color: var(--accent);
-  color: var(--accent-strong);
+.btn-glow:hover {
+  border-color: var(--accent-light);
+  background: linear-gradient(135deg, var(--accent-a24), var(--cyan-a20));
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.12),
+    0 0 30px -4px var(--accent-a60),
+    0 0 46px -12px var(--cyan-a36);
 }
 
-.add-button:active {
-  transform: translateY(1px) scale(0.98);
+@media (hover: hover) {
+  .btn-glow:hover {
+    transform: translateY(-1px);
+  }
 }
 
-/* =========================================
+/* =========================================================
    TEMPLATE BUTTON
-========================================= */
+========================================================= */
 
 .template-button {
   border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 0.75rem;
+  border-radius: var(--corner-button);
+  padding: 12px;
+  background: var(--glass);
   color: var(--muted);
-  background: var(--surface);
   transition:
-    background-color var(--fast) var(--ease),
+    background var(--fast) var(--ease),
     border-color var(--fast) var(--ease),
-    color var(--fast) var(--ease);
+    color var(--fast) var(--ease),
+    box-shadow var(--fast) var(--ease);
 }
 
 .template-button:hover {
-  background: var(--surface-hover);
+  border-color: var(--border-accent);
+  background: var(--glass-hover);
   color: var(--text);
 }
 
 .template-active,
-.template-active:hover {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  color: var(--accent);
+.template-active:hover,
+.template-button[aria-pressed="true"],
+.template-button[aria-selected="true"] {
+  border-color: var(--accent-light);
+  background: linear-gradient(135deg, var(--accent-a24), var(--cyan-a10));
+  color: #fff;
+  box-shadow:
+    0 0 0 3px var(--accent-a16),
+    0 0 30px -4px var(--accent-a40);
 }
 
-/* =========================================
+/* =========================================================
    TEMPLATE CARDS
-========================================= */
+   The selected card wears a gradient ring; selection is
+   never colour-only (check badge included).
+========================================================= */
 
 .template-card {
   position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
-  gap: 10px;
   align-items: center;
+  gap: 10px;
+  padding: 12px;
+  overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--corner-tile);
-  background: var(--surface);
-  padding: 12px;
+  background: var(--gradient-subtle);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   color: var(--muted);
   transition:
-    border-color var(--fast) var(--ease),
-    background-color var(--fast) var(--ease),
-    box-shadow var(--fast) var(--ease),
-    transform var(--fast) var(--ease);
+    transform var(--normal) var(--ease),
+    border-color var(--normal) var(--ease),
+    box-shadow var(--normal) var(--ease),
+    color var(--normal) var(--ease);
+}
+
+.template-card::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -45%;
+  right: -30%;
+  width: 75%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-a40), transparent 70%);
+  opacity: 0.35;
+  pointer-events: none;
+  transition:
+    opacity var(--normal) var(--ease),
+    transform 500ms var(--ease);
 }
 
 .template-card:hover {
-  border-color: var(--accent-line);
-  background: var(--surface-hover);
-  transform: translateY(-2px);
+  border-color: var(--border-accent);
+  color: #fff;
+  box-shadow: 0 22px 46px -22px oklch(0 0 0 / 0.8);
+}
+
+.template-card:hover::before {
+  opacity: 0.8;
+  transform: scale(1.35);
+}
+
+@media (hover: hover) {
+  .template-card:hover {
+    transform: translateY(-3px);
+  }
 }
 
 .template-card-active,
 .template-card-active:hover {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  color: var(--accent);
+  border-color: transparent;
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in oklab, var(--accent) 24%, var(--panel-solid)),
+      color-mix(in oklab, var(--cyan) 7%, var(--panel-solid))
+    )
+      padding-box,
+    var(--gradient-aurora) border-box;
+  color: #fff;
   box-shadow:
-    0 0 0 3px var(--accent-ring),
-    0 18px 32px -18px oklch(0.79 0.125 var(--hue) / 0.55);
+    0 0 0 4px var(--accent-a16),
+    0 26px 50px -22px oklch(0 0 0 / 0.85),
+    0 0 44px -6px var(--accent-a40);
 }
 
-/* Check badge: the selected state is never colour-only */
+.template-card-active::before {
+  opacity: 0.75;
+}
+
 .template-card-active::after {
   content: "";
   position: absolute;
@@ -327,29 +741,50 @@ textarea.input {
   height: 20px;
   border-radius: 999px;
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23120e1f' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E")
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306081a' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E")
       center / 12px no-repeat,
-    var(--accent);
-  box-shadow: 0 0 0 3px var(--panel);
+    linear-gradient(135deg, var(--accent-light), var(--cyan));
+  box-shadow:
+    0 0 0 3px oklch(0.2 0.04 var(--hue-bg) / 0.9),
+    0 0 20px var(--cyan-a36);
+  animation: badge-pop 320ms var(--ease);
+}
+
+@keyframes badge-pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
 }
 
 .template-card span {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-/* =========================================
+/* =========================================================
    MINI TEMPLATE PREVIEW
-========================================= */
+========================================================= */
 
 .template-mini {
   width: 100%;
   height: 130px;
-  border-radius: 6px;
-  background: #fff;
   padding: 12px;
   overflow: hidden;
-  box-shadow: 0 10px 20px -10px oklch(0 0 0 / 0.75);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 18px 34px -14px oklch(0 0 0 / 0.75);
+  transition:
+    transform var(--normal) var(--ease),
+    box-shadow var(--normal) var(--ease);
+}
+
+@media (hover: hover) {
+  .template-card:hover .template-mini {
+    transform: translateY(-2px) scale(1.02);
+  }
 }
 
 .mini-title {
@@ -386,32 +821,28 @@ textarea.input {
 }
 
 /* Modern */
-
 .modern-mini {
-  border-top: 5px solid #06b6d4;
+  border-top: 5px solid #4f46e5;
 }
 
 .modern-mini .mini-title,
 .modern-mini .mini-section {
-  background: #0891b2;
+  background: #4338ca;
 }
 
 /* Classic */
-
 .classic-mini {
   border-top: 3px solid #111827;
-  font-family: Georgia, serif;
+  font-family: Georgia, "Times New Roman", serif;
 }
 
 .classic-mini .mini-title {
   width: 65%;
   margin-left: auto;
   margin-right: auto;
-  background: #111827;
 }
 
 /* Minimal */
-
 .minimal-mini {
   padding-left: 18px;
   padding-right: 18px;
@@ -428,7 +859,6 @@ textarea.input {
 }
 
 /* Professional */
-
 .professional-mini {
   border-left: 5px solid #374151;
 }
@@ -437,65 +867,98 @@ textarea.input {
   width: 55%;
 }
 
-/* =========================================
-   RESUME PREVIEW (the paper)
-   Resume colours stay fixed so the printed
-   PDF never changes with the app theme.
-========================================= */
+.professional-mini .mini-section {
+  width: 55%;
+  height: 8px;
+  border-left: 2px solid #374151;
+  background: #e5e7eb;
+}
+
+/* =========================================================
+   RESUME PAPER
+   True A4, so the preview wraps like the PDF. Paper colours
+   are fixed on purpose: the printout never changes with the
+   app theme. The halo is the one loud thing on the desk.
+========================================================= */
 
 .resume-preview {
   --paper-ink: #111827;
   --paper-body: #374151;
   --paper-muted: #6b7280;
+  --paper-rule: #e5e7eb;
   --paper-accent: #111827;
+  --paper-sans: "Helvetica Neue", Helvetica, Arial, "Liberation Sans", sans-serif;
+  --paper-serif: Georgia, "Times New Roman", "Liberation Serif", serif;
 
   width: 100%;
-  max-width: 850px;
-  min-height: 1100px;
+  max-width: 210mm;
+  min-height: 297mm;
   margin: 0 auto;
+  border-radius: 4px;
   background: #fff;
   color: var(--paper-ink);
-  font-family: Arial, Helvetica, sans-serif;
-  border-radius: 3px;
+  color-scheme: light;
+  font-family: var(--paper-sans);
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
   box-shadow:
-    0 0 0 1px oklch(1 0 0 / 0.06),
-    0 40px 80px -24px oklch(0 0 0 / 0.75),
-    0 0 110px -30px oklch(0.79 0.125 var(--hue) / 0.22);
-  transition:
-    border-color 0.3s ease,
-    border-width 0.3s ease;
+    0 0 0 1px oklch(1 0 0 / 0.08),
+    0 2px 4px oklch(0 0 0 / 0.25),
+    0 40px 90px -30px oklch(0 0 0 / 0.8),
+    -40px 0 140px -40px var(--accent-a60),
+    50px 40px 140px -50px var(--cyan-a36);
+  animation: paper-in 600ms var(--ease) backwards;
 }
 
-/* =========================================
-   MODERN RESUME
-========================================= */
+@keyframes paper-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.992);
+  }
+}
+
+.resume-preview ::selection {
+  background: #c7d2fe;
+  color: #111827;
+}
+
+/* ---------- Modern ---------- */
 
 .resume-preview.modern {
-  --paper-accent: #0891b2;
-  font-family: Arial, Helvetica, sans-serif;
-  border-top: 8px solid #06b6d4;
+  --paper-accent: var(--resume-accent, #4338ca);
+  border-top: 8px solid var(--resume-accent, #4f46e5);
 }
 
 .resume-preview.modern h1 {
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
 }
 
 .resume-preview.modern .resume-heading {
+  position: relative;
+  border-bottom: 1px solid var(--paper-rule);
   color: var(--paper-accent);
-  border-bottom: 2px solid var(--paper-accent);
 }
 
-/* =========================================
-   CLASSIC RESUME
-========================================= */
+.resume-preview.modern .resume-heading::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 38px;
+  height: 2px;
+  background: var(--paper-accent);
+}
+
+/* ---------- Classic ---------- */
 
 .resume-preview.classic {
-  font-family: Georgia, "Times New Roman", serif;
+  --paper-accent: var(--resume-accent, #111827);
+  font-family: var(--paper-serif);
 }
 
 .resume-preview.classic h1 {
   text-align: center;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--paper-serif);
 }
 
 .resume-preview.classic > p {
@@ -503,114 +966,334 @@ textarea.input {
 }
 
 .resume-preview.classic .resume-heading {
-  font-family: Georgia, "Times New Roman", serif;
-  text-align: center;
-  border-bottom: 1px solid #222;
   padding-bottom: 5px;
+  border-bottom: 1px solid var(--paper-accent);
+  text-align: center;
+  letter-spacing: 0.14em;
+  font-family: var(--paper-serif);
 }
 
-/* =========================================
-   MINIMAL RESUME
-========================================= */
-
-.resume-preview.minimal {
-  font-family: Arial, Helvetica, sans-serif;
-}
+/* ---------- Minimal ---------- */
 
 .resume-preview.minimal h1 {
   font-size: 2.2rem;
   font-weight: 500;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .resume-preview.minimal .resume-heading {
+  padding-bottom: 0;
   border: none;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 11px;
   color: var(--paper-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
-/* =========================================
-   PROFESSIONAL RESUME
-========================================= */
+/* ---------- Professional ---------- */
 
 .resume-preview.professional {
-  font-family: "Trebuchet MS", Arial, sans-serif;
-  border-left: 8px solid #374151;
+  --paper-accent: var(--resume-accent, #374151);
+  font-family: "Trebuchet MS", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  border-left: 8px solid var(--paper-accent);
 }
 
 .resume-preview.professional h1 {
-  text-transform: uppercase;
   letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .resume-preview.professional .resume-heading {
-  background: #f3f4f6;
   padding: 5px 8px;
   border: none;
-  border-left: 3px solid #374151;
+  border-left: 3px solid var(--paper-accent);
+  background: #f3f4f6;
   letter-spacing: 0.08em;
-  font-family: "Trebuchet MS", Arial, sans-serif;
+  font-family: inherit;
 }
 
-/* =========================================
-   RESUME HEADINGS
-========================================= */
+/* ---------- Shared ---------- */
 
 .resume-heading {
   margin-bottom: 10px;
-  border-bottom: 2px solid var(--paper-ink);
   padding-bottom: 5px;
+  border-bottom: 2px solid var(--paper-ink);
+  color: var(--paper-ink);
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.08em;
-  color: var(--paper-ink);
+  break-after: avoid;
 }
-
-/* =========================================
-   RESUME TEXT
-========================================= */
 
 .resume-text {
   margin-top: 8px;
   color: var(--paper-body);
   font-size: 13px;
-  line-height: 1.65;
+  line-height: 1.62;
   overflow-wrap: break-word;
+  text-wrap: pretty;
+  orphans: 3;
+  widows: 3;
 }
 
-/* =========================================
-   SCROLLBAR
-========================================= */
+/* =========================================================
+   TEXT + STATUS UTILITIES
+========================================================= */
 
-* {
-  scrollbar-width: thin;
-  scrollbar-color: oklch(0.36 0.04 var(--hue)) transparent;
+.ai-gradient-text {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+.ai-glow {
+  color: var(--cyan);
+  filter: drop-shadow(0 0 8px var(--cyan-a36));
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+.status-success {
+  color: var(--success);
+  text-shadow: 0 0 16px color-mix(in oklab, var(--success) 30%, transparent);
 }
 
-::-webkit-scrollbar-thumb {
-  border: 2px solid var(--bg);
-  border-radius: 10px;
-  background: oklch(0.36 0.04 var(--hue));
+.status-danger {
+  color: var(--danger);
+  text-shadow: 0 0 16px color-mix(in oklab, var(--danger) 30%, transparent);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.46 0.06 var(--hue));
+.status-warning {
+  color: var(--warning);
+  text-shadow: 0 0 16px color-mix(in oklab, var(--warning) 30%, transparent);
 }
 
-/* =========================================
+/* =========================================================
+   BADGES
+========================================================= */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.badge-primary {
+  border-color: var(--accent-a40);
+  background: var(--accent-a10);
+  color: var(--accent-bright);
+  box-shadow: 0 0 18px -4px var(--accent-a24);
+}
+
+.badge-ai {
+  border-color: var(--cyan-a36);
+  background: var(--cyan-a10);
+  color: var(--cyan);
+  box-shadow: 0 0 18px -4px var(--cyan-a20);
+}
+
+/* =========================================================
+   DIVIDER · ORB · SHIMMER
+========================================================= */
+
+.glow-divider {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(90deg, transparent, var(--accent-a40), var(--cyan-a20), transparent);
+}
+
+.glow-orb {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-a24), transparent 70%);
+  filter: blur(12px);
+  pointer-events: none;
+  animation: floatGlow 9s ease-in-out infinite;
+}
+
+@keyframes floatGlow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -14px, 0);
+  }
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 -60%;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.09), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+  animation: shimmer 3.6s var(--ease) infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(0) skewX(-20deg);
+  }
+  55%,
+  100% {
+    transform: translateX(520%) skewX(-20deg);
+  }
+}
+
+/* =========================================================
+   FALLBACKS · no blur support, or the user asked for less
+========================================================= */
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .builder-card,
+  .glass,
+  .template-card {
+    background-color: var(--panel-solid);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .builder-card,
+  .glass,
+  .template-card,
+  .badge {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: var(--panel-solid);
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --border: oklch(1 0 0 / 0.28);
+    --border-light: oklch(1 0 0 / 0.4);
+    --muted: oklch(0.86 0.02 var(--hue-bg));
+    --faint: oklch(0.76 0.03 var(--hue-bg));
+  }
+}
+
+@media (forced-colors: active) {
+  .template-card-active,
+  .template-active {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 640px) {
+  .builder-card {
+    padding: 19px;
+    border-radius: var(--radius-lg);
+  }
+
+  .section-title {
+    gap: 9px;
+    margin-bottom: 17px;
+    padding-bottom: 13px;
+  }
+
+  .section-title svg {
+    width: 17px;
+    height: 17px;
+    padding: 7px;
+  }
+
+  .section-title h2 {
+    font-size: 15px;
+  }
+
+  .add-button,
+  .btn-primary {
+    min-height: 44px;
+  }
+
+  .template-mini {
+    height: 110px;
+  }
+
+  .template-card {
+    padding: 9px;
+  }
+
+  .resume-preview {
+    min-height: auto;
+    padding: 24px !important;
+    border-radius: 2px;
+    box-shadow:
+      0 0 0 1px oklch(1 0 0 / 0.08),
+      0 24px 50px -20px oklch(0 0 0 / 0.7),
+      0 0 70px -24px var(--accent-a40);
+  }
+
+  .resume-preview h1 {
+    font-size: 25px;
+  }
+
+  .resume-preview p {
+    font-size: 12px;
+  }
+
+  .glow-orb {
+    width: 160px;
+    height: 160px;
+  }
+}
+
+/* iOS zooms into any field under 16px */
+@media (max-width: 640px), (pointer: coarse) {
+  .input {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 400px) {
+  .builder-card {
+    padding: 15px;
+  }
+
+  .resume-preview {
+    padding: 18px !important;
+  }
+
+  .resume-preview h1 {
+    font-size: 22px;
+  }
+
+  .resume-heading {
+    font-size: 11px;
+  }
+
+  .resume-text {
+    font-size: 12px;
+  }
+}
+
+/* =========================================================
    REDUCED MOTION
-========================================= */
+========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -622,49 +1305,26 @@ textarea.input {
   *::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 
-  .template-card:hover {
+  .template-card:hover,
+  .template-card:hover .template-mini,
+  .add-button:hover,
+  .btn-primary:hover,
+  .btn-glow:hover {
     transform: none;
   }
 }
 
-/* =========================================
-   MOBILE
-========================================= */
-
-@media (max-width: 640px) {
-  .builder-card {
-    padding: 18px;
-    border-radius: 16px;
-  }
-
-  .section-title {
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-  }
-
-  .resume-preview {
-    padding: 24px !important;
-    min-height: auto;
-  }
-
-  .resume-preview h1 {
-    font-size: 25px;
-  }
-
-  .resume-preview p {
-    font-size: 12px;
-  }
-
-  .template-mini {
-    height: 110px;
-  }
-}
-
-/* =========================================
+/* =========================================================
    PRINT / PDF
-========================================= */
+   Only the paper prints, and it now flows onto as many A4
+   pages as it needs (the old rules cut everything after
+   page 1). @page margin stays 0 so browsers add no date /
+   URL header; the paper's own padding is repeated on every
+   page with box-decoration-break.
+========================================================= */
 
 @media print {
   @page {
@@ -672,66 +1332,136 @@ textarea.input {
     margin: 0;
   }
 
-  html,
-  body {
-    width: 210mm !important;
-    height: 297mm !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: white !important;
-    overflow: hidden !important;
-  }
-
-  body > * {
+  body::before,
+  body::after {
     display: none !important;
   }
 
-  body {
-    display: block !important;
-  }
+  @supports selector(:has(a)) {
+    /* hide everything that neither contains nor is the resume */
+    :has(#resume-print) > :not(#resume-print):not(:has(#resume-print)) {
+      display: none !important;
+    }
 
-  #root {
-    display: block !important;
-    width: 210mm !important;
-    height: 297mm !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-  }
+    /* flatten every wrapper around it so it can paginate */
+    :has(#resume-print) {
+      all: unset !important;
+      display: block !important;
+      background: #fff !important;
+    }
 
-  #root * {
-    visibility: hidden !important;
+    #resume-print {
+      display: block !important;
+      position: static !important;
+      width: 100% !important;
+      max-width: none !important;
+      height: auto !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      background: #fff !important;
+      box-shadow: none !important;
+      overflow: visible !important;
+      transform: none !important;
+      zoom: 1 !important;
+    }
+
+    #resume-print .resume-preview,
+    #resume-print.resume-preview {
+      width: 100% !important;
+      max-width: none !important;
+      height: auto !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 15mm !important;
+      border-radius: 0 !important;
+      background: #fff !important;
+      box-shadow: none !important;
+      overflow: visible !important;
+      animation: none !important;
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+    }
   }
 
   #resume-print,
   #resume-print * {
-    visibility: visible !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
-  #resume-print {
-    display: block !important;
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 210mm !important;
-    height: 297mm !important;
-    margin: 0 !important;
-    padding: 15mm !important;
-    box-sizing: border-box !important;
-    background: white !important;
-    box-shadow: none !important;
-    overflow: hidden !important;
+  .resume-preview :is(h1, h2, h3, h4) {
+    break-after: avoid;
   }
 
-  #resume-print .resume-preview {
-    width: 100% !important;
-    max-width: none !important;
-    min-height: auto !important;
-    margin: 0 !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    background: white !important;
+  .resume-preview :is(li, tr, img) {
+    break-inside: avoid;
+  }
+
+  /* Browsers without :has() keep the original single-page behaviour */
+  @supports not selector(:has(a)) {
+    html,
+    body {
+      width: 210mm !important;
+      height: 297mm !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #fff !important;
+      overflow: hidden !important;
+    }
+
+    body > * {
+      display: none !important;
+    }
+
+    body,
+    #root {
+      display: block !important;
+    }
+
+    #root {
+      width: 210mm !important;
+      height: 297mm !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+    }
+
+    #root * {
+      visibility: hidden !important;
+    }
+
+    #resume-print,
+    #resume-print * {
+      visibility: visible !important;
+    }
+
+    #resume-print {
+      display: block !important;
+      position: absolute !important;
+      left: 0 !important;
+      top: 0 !important;
+      width: 210mm !important;
+      height: 297mm !important;
+      margin: 0 !important;
+      padding: 15mm !important;
+      box-sizing: border-box !important;
+      background: #fff !important;
+      box-shadow: none !important;
+      overflow: hidden !important;
+    }
+
+    #resume-print .resume-preview {
+      width: 100% !important;
+      max-width: none !important;
+      min-height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+      background: #fff !important;
+      box-shadow: none !important;
+      animation: none !important;
+    }
   }
 }
